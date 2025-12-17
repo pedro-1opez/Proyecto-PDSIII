@@ -21,6 +21,7 @@
     <string name="btn_Ingresar">Ingresar</string>
     <string name="txt_no_tienes_cuenta">¿No tienes una cuenta?</string>
     <string name="tv_registrarme">Registrarme</string>
+    <string name="tv_recuperar_cuenta">¿Olvidé la contraseña? <b>Recuperar</b></string>
 
     <!-- REGISTRO -->
     <string name="txt_registro">Registro</string>
@@ -37,12 +38,17 @@
     <string name="tv_proveedor"> -- </string>
     <string name="txt_t_registro">Miembro desde: </string>
     <string name="tv_t_registro"> -- </string>
-
     <string name="btn_ActualizarInfo">Actualizar</string>
     <string name="btn_Cerrarsesion">Cerrar sesión</string>
 
+    <!-- PERFIL-EDITAR -->
     <string name="txt_titulo_edit">Editar información</string>
     <string name="btn_Actualizar">Actualizar</string>
+
+    <!-- PERFIL-RECUPERAR PASSWORD -->
+    <string name="txt_olvide_password">Olvidé password</string>
+    <string name="txt_ingrese_email">Ingrese su email para el envío de las instrucciones de recuperación</string>
+    <string name="btn_Enviar">Enviar</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
