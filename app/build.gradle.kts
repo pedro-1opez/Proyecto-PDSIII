@@ -52,7 +52,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // Firebase dependencies
+    // Firebase / Google dependencies
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
@@ -61,4 +61,6 @@ dependencies {
     implementation(libs.firebase.credentials.service)
     implementation(libs.firebase.identity.googleid)
 
+    implementation(libs.circle.images)
+    implementation(libs.glide)
 }
