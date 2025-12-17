@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.core.Context
 import com.pedro_lopez.pds_iii_.Constantes
+import com.pedro_lopez.pds_iii_.EditarInformacionActivity
 import com.pedro_lopez.pds_iii_.OpcionesLoginActivity
 import com.pedro_lopez.pds_iii_.R
 import com.pedro_lopez.pds_iii_.databinding.FragmentPerfilBinding
@@ -41,6 +42,10 @@ class FragmentPerfil : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         cargarInformacion()
+
+        binding.btnActualizarInfo.setOnClickListener {
+            startActivity(Intent(mContext, EditarInformacionActivity::class.java))
+        }
 
         binding.btnCerrarsesion.setOnClickListener {
             firebaseAuth.signOut()
