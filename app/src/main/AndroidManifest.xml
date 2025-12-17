@@ -16,6 +16,9 @@
         android:theme="@style/Theme.PDSIII"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".CambiarPasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".OlvidePasswordActivity"
             android:exported="false" />
         <activity

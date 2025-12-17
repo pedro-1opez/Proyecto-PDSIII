@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.core.Context
+import com.pedro_lopez.pds_iii_.CambiarPasswordActivity
 import com.pedro_lopez.pds_iii_.Constantes
 import com.pedro_lopez.pds_iii_.EditarInformacionActivity
 import com.pedro_lopez.pds_iii_.OpcionesLoginActivity
@@ -45,6 +46,10 @@ class FragmentPerfil : Fragment() {
 
         binding.btnActualizarInfo.setOnClickListener {
             startActivity(Intent(mContext, EditarInformacionActivity::class.java))
+        }
+
+        binding.btnCambiarPassword.setOnClickListener {
+            startActivity(Intent(mContext, CambiarPasswordActivity::class.java))
         }
 
         binding.btnCerrarsesion.setOnClickListener {
@@ -90,6 +95,10 @@ class FragmentPerfil : Fragment() {
                             "${e.message}",
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
+
+                    if (proveedor == "Email") {
+                        binding.btnCambiarPassword.visibility = View.VISIBLE
                     }
 
                 }
