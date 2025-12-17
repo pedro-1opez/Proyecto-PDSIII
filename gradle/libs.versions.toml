@@ -35,6 +35,7 @@ firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-credentials = { module = "androidx.credentials:credentials" }
 firebase-credentials-service = { module = "androidx.credentials:credentials-play-services-auth" }
 firebase-identity-googleid = { module = "com.google.android.libraries.identity.googleid:googleid" }
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
 
 circle-images = { module = "de.hdodenhof:circleimageview", version.ref = "circleImageV" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideV"}

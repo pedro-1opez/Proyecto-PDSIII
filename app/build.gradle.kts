@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.firebase.credentials)
     implementation(libs.firebase.credentials.service)
     implementation(libs.firebase.identity.googleid)
+    implementation(libs.firebase.storage)
 
     implementation(libs.circle.images)
     implementation(libs.glide)
