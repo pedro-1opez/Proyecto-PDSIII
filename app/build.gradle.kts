@@ -64,4 +64,5 @@ dependencies {
 
     implementation(libs.circle.images)
     implementation(libs.glide)
+    implementation(libs.photo.view)
 }

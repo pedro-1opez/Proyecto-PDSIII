@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.pedro_lopez.pds_iii_.Fragmentos.FragmentChats
 import com.pedro_lopez.pds_iii_.Fragmentos.FragmentPerfil
 import com.pedro_lopez.pds_iii_.Fragmentos.FragmentUsuarios
@@ -86,6 +87,24 @@ class MainActivity : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(binding.fragmentoFL.id, fragment, "Fragment Chats")
         fragmentTransaction.commit()
+    }
+
+    private fun actualizarEstado(estado : String) {
+        val ref = FirebaseDatabase.getInstance().reference.child("Usuarios").child(firebaseAuth.uid!!)
+
+        val hashMap = HashMap<String, Any>()
+        hashMap["estado"] = estado
+        ref!!.updateChildren(hashMap)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        actualizarEstado("Online")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        actualizarEstado("Offline")
     }
 
 }

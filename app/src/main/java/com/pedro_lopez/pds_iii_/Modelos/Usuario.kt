@@ -1,4 +1,4 @@
-package com.pedro_lopez.pds_iii_
+package com.pedro_lopez.pds_iii_.Modelos
 
 class Usuario {
 

@@ -14,9 +14,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.pedro_lopez.pds_iii_.AdaptadorUsuario
+import com.pedro_lopez.pds_iii_.Adaptadores.AdaptadorUsuario
 import com.pedro_lopez.pds_iii_.R
-import com.pedro_lopez.pds_iii_.Usuario
+import com.pedro_lopez.pds_iii_.Modelos.Usuario
 import com.pedro_lopez.pds_iii_.databinding.FragmentUsuariosBinding
 
 class FragmentUsuarios : Fragment() {
