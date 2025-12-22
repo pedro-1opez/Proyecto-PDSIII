@@ -1,17 +1,30 @@
 package com.pedro_lopez.pds_iii_
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.pedro_lopez.pds_iii_.Fragmentos.FragmentChats
 import com.pedro_lopez.pds_iii_.Fragmentos.FragmentPerfil
 import com.pedro_lopez.pds_iii_.Fragmentos.FragmentUsuarios
 import com.pedro_lopez.pds_iii_.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.lang.reflect.Method
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,10 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
-        if (firebaseAuth.currentUser == null) {
-            irOpcionesLogin()
-        }
-
+        comprobarSesion()
 
         // Fragmento por defecto
         verFragmentoPerfil()
@@ -57,9 +67,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun irOpcionesLogin() {
-        startActivity(Intent(applicationContext, OpcionesLoginActivity::class.java))
-        finishAffinity()
+    private fun comprobarSesion() {
+        if (firebaseAuth.currentUser == null){
+            startActivity(Intent(applicationContext, OpcionesLoginActivity::class.java))
+            finishAffinity()
+        } else {
+            agregarToken()
+            solicitarPermisoNotificaciones()
+        }
     }
 
     private fun verFragmentoPerfil() {
@@ -99,12 +114,60 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        actualizarEstado("Online")
+        if (firebaseAuth.currentUser != null) {
+            actualizarEstado("Online")
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        actualizarEstado("Offline")
+        if (firebaseAuth.currentUser != null) {
+            actualizarEstado("Offline")
+        }
     }
+
+    private fun agregarToken() {
+        val miUid = "${firebaseAuth.uid}"
+        FirebaseMessaging.getInstance().token
+            .addOnSuccessListener { fcmToken ->
+                val hashMap = HashMap<String, Any>()
+                hashMap["fcmToken"] = "${fcmToken}"
+                val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
+                ref.child(miUid)
+                    .updateChildren(hashMap)
+                    .addOnSuccessListener {
+                        // El token se agregó con éxito
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(
+                            this,
+                            "${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    this,
+                    "${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    }
+
+    private fun solicitarPermisoNotificaciones() {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_DENIED) {
+                concederPermiso.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private val concederPermiso =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { esConcedido ->
+            // El permiso se ha concedido
+        }
 
 }

@@ -126,7 +126,7 @@ class AdaptadorChats : RecyclerView.Adapter<AdaptadorChats.HolderChats> {
                     holder.tvNombres.text = nombres
 
                     try {
-                        Glide.with(context)
+                        Glide.with(context.applicationContext)
                             .load(imagen)
                             .placeholder(R.drawable.ic_img_perfil)
                             .into(holder.ivPerfil)

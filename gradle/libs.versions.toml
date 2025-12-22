@@ -13,10 +13,13 @@ constraintlayout = "2.2.1"
 # Firebase / Google - Versions
 firebaseBomV="34.7.0"
 googleServicesV="4.4.4"
+googleApiClientV="2.8.1"
+googleOauth2V="1.41.0"
 
 circleImageV="3.1.0"
 glideV="5.0.5"
 photoViewV="2.3.0"
+volleyV="1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +33,9 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 
 # Firebase / Google - Libraries
 google-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomV" }
+google-api-client = { module = "com.google.api-client:google-api-client", version.ref = "googleApiClientV" }
+google-oauth2 = { module= "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleOauth2V" }
+
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-database = { module = "com.google.firebase:firebase-database" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
@@ -37,10 +43,12 @@ firebase-credentials = { module = "androidx.credentials:credentials" }
 firebase-credentials-service = { module = "androidx.credentials:credentials-play-services-auth" }
 firebase-identity-googleid = { module = "com.google.android.libraries.identity.googleid:googleid" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
 circle-images = { module = "de.hdodenhof:circleimageview", version.ref = "circleImageV" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideV"}
 photo-view = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoViewV" }
+volley = { module = "com.android.volley:volley", version.ref = "volleyV" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

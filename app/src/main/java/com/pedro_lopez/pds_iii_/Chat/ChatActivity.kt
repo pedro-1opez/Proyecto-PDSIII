@@ -6,11 +6,15 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
+import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -22,6 +26,11 @@ import com.pedro_lopez.pds_iii_.Constantes
 import com.pedro_lopez.pds_iii_.Modelos.Chat
 import com.pedro_lopez.pds_iii_.R
 import com.pedro_lopez.pds_iii_.databinding.ActivityChatBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 class ChatActivity : AppCompatActivity() {
 
@@ -33,6 +42,8 @@ class ChatActivity : AppCompatActivity() {
 
     private var chatRuta = ""
     private var imagenUri : Uri?= null
+    private var miNombre = ""
+    private var recibimosToken = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +60,8 @@ class ChatActivity : AppCompatActivity() {
         miUid = firebaseAuth.uid!!
 
         chatRuta = Constantes.rutaChat(uid, miUid)
+
+        cargarMiInformacion()
 
         binding.adjuntarFAB.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -68,6 +81,20 @@ class ChatActivity : AppCompatActivity() {
 
         cargarInfo()
         cargarMensajes()
+    }
+
+    private fun cargarMiInformacion() {
+        var ref = FirebaseDatabase.getInstance().getReference("Usuarios")
+        ref.child("${firebaseAuth.uid}")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    miNombre = "${snapshot.child("nombres").value}"
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
     }
 
     private fun cargarMensajes() {
@@ -127,12 +154,13 @@ class ChatActivity : AppCompatActivity() {
                     val nombres = "${snapshot.child("nombres").value}"
                     val imagen = "${snapshot.child("imagen").value}"
                     val estado = "${snapshot.child("estado").value}"
+                    recibimosToken = "${snapshot.child("fcmToken").value}"
 
                     binding.txtEstadoChat.text = estado
                     binding.txtNombreUsuario.text = nombres
 
                     try {
-                        Glide.with(this@ChatActivity)
+                        Glide.with(applicationContext)
                             .load(imagen)
                             .placeholder(R.drawable.perfil_usuario)
                             .into(binding.toolbarIv)
@@ -143,7 +171,7 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+
                 }
 
             })
@@ -222,6 +250,13 @@ class ChatActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 progressDialog.dismiss()
                 binding.etMensajeChat.setText("")
+
+                if (tipoMensaje == Constantes.MENSAJE_TIPO_TEXTO) {
+                    prepararNotificacion(mensaje)
+                } else {
+                    prepararNotificacion("Se envió una imagen")
+                }
+
             }
             .addOnFailureListener { e ->
                 progressDialog.dismiss()
@@ -232,6 +267,80 @@ class ChatActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+    }
+
+    private fun obtenerAccessToken() : String? {
+        return try {
+            val servicioCuenta = applicationContext.assets.open("service-account.json")
+
+            val googleCredentials = GoogleCredentials.fromStream(servicioCuenta)
+                .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
+
+            googleCredentials.refreshIfExpired()
+            googleCredentials.accessToken.tokenValue
+
+        } catch (e : Exception) {
+            null
+        }
+    }
+
+    private fun prepararNotificacion(mensaje : String) {
+        val notificacionJo = JSONObject()
+        val messageJo = JSONObject()
+        val notificacionPayload = JSONObject()
+        val messageData = JSONObject()
+
+        try {
+            notificacionPayload.put("title", "Nuevo mensaje")
+            notificacionPayload.put("body", mensaje)
+
+            messageData.put("notificationType", "nuevo_mensaje")
+            messageData.put("senderUid", firebaseAuth.uid)
+
+            messageJo.put("token", recibimosToken)
+            messageJo.put("notification", notificacionPayload)
+            messageJo.put("data", messageData)
+
+            notificacionJo.put("message", messageJo)
+
+        } catch (e : Exception) {
+            e.printStackTrace()
+        }
+
+        enviarNotification(notificacionJo)
+    }
+
+    private fun enviarNotification(notificacionJo: JSONObject) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val url = "https://fcm.googleapis.com/v1/projects/pds-iii-lopezlopez/messages:send"
+            val accessToken = obtenerAccessToken()
+            if (accessToken != null) {
+                withContext(Dispatchers.Main) {
+                    val jsonObjectRequest : JsonObjectRequest = object : JsonObjectRequest (
+                        Method.POST,
+                        url,
+                        notificacionJo,
+                        com.android.volley.Response.Listener {
+                            // La solicitud es exitosa
+                        },
+                        com.android.volley.Response.ErrorListener {
+                            // La solicitud no es exitosa
+                        }
+                    ) {
+                        override fun getHeaders() : MutableMap<String, String> {
+                            val headers = HashMap<String, String>()
+                            headers["Content-Type"] = "application/json"
+                            headers["Authorization"] = "Bearer $accessToken"
+                            return headers
+                        }
+                    }
+                    Volley.newRequestQueue(this@ChatActivity).add(jsonObjectRequest)
+                }
+            } else {
+                Log.e("Error", "No se pudo obtener el token de acceso")
+            }
+        }
+
     }
 
     private fun actualizarEstado(estado : String) {
@@ -245,11 +354,15 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        actualizarEstado("Online")
+        if (firebaseAuth.currentUser != null) {
+            actualizarEstado("Online")
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        actualizarEstado("Offline")
+        if (firebaseAuth.currentUser != null) {
+            actualizarEstado("Offline")
+        }
     }
 }

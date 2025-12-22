@@ -10,6 +10,9 @@ object Constantes {
     const val MENSAJE_TIPO_TEXTO = "TEXTO"
     const val MENSAJE_TIPO_IMAGEN = "IMAGEN"
 
+    const val NOTIFICACION_DE_NUEVO_MENSAJE = "NOTIFICACION_DE_NUEVO_MENSAJE"
+    const val FCM_SERVER_KEY = ""
+
     fun obtenerTiempoD() : Long {
         return System.currentTimeMillis()
     }

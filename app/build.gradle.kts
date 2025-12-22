@@ -33,6 +33,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    packaging {
+        resources.excludes.add("META-INF/INDEX.LIST")
+        resources.excludes.add("META-INF/DEPENDENCIES")
+    }
+
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -54,6 +60,9 @@ dependencies {
 
     // Firebase / Google dependencies
     implementation(platform(libs.google.firebase.bom))
+    implementation(libs.google.api.client)
+    implementation(libs.google.oauth2)
+
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.analytics)
@@ -61,8 +70,10 @@ dependencies {
     implementation(libs.firebase.credentials.service)
     implementation(libs.firebase.identity.googleid)
     implementation(libs.firebase.storage)
+    implementation(libs.firebase.messaging)
 
     implementation(libs.circle.images)
     implementation(libs.glide)
     implementation(libs.photo.view)
+    implementation(libs.volley)
 }
